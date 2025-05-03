@@ -13,7 +13,7 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import colors from "../utils/colors";
 import { useNavigation } from "@react-navigation/native";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 const SIZE = width * 1;
 
 const CENTER = SIZE / 2;
@@ -36,6 +36,9 @@ const AudioVisualizer = ({
   setIsPlaying,
   setSongReady,
   setSongStartTimestamp,
+  colorValues,
+  pattern,
+  songName,
 }) => {
   const navigation = useNavigation();
 
@@ -44,6 +47,10 @@ const AudioVisualizer = ({
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // Raindrop State for animation
+  const [raindrops, setRaindrops] = useState([]); // Holds active raindrops
+  const [lastRaindropTime, setLastRaindropTime] = useState(0); // Timestamp for controlling raindrop appearance timing
 
   useEffect(() => {
     const loadSound = async () => {
@@ -90,11 +97,17 @@ const AudioVisualizer = ({
         setPosition(positionSec);
         const frameIndex = Math.floor(positionSec / 0.05); // 20 FPS
         setFrameIndex(frameIndex % barValues.length);
+
+        const currentTime = new Date().getTime();
+        if (currentTime - lastRaindropTime >= 1000) {
+          setLastRaindropTime(currentTime);
+          spawnRaindrop();
+        }
       }
     }, 25);
 
     return () => clearInterval(interval);
-  }, [sound]);
+  }, [sound, lastRaindropTime]);
 
   const handlePlayPause = async () => {
     if (!sound) return;
@@ -140,6 +153,54 @@ const AudioVisualizer = ({
   const frame = barValues[frameIndex];
   const progress = position / duration;
 
+  // Function to spawn a raindrop with color and animation
+  const spawnRaindrop = () => {
+    const colorTuple = colorValues[Math.floor(position)] || [255, 255, 255]; // Get color from colorValues array
+    const color = `rgb(${colorTuple[0]}, ${colorTuple[1]}, ${colorTuple[2]})`;
+
+    const newRaindrop = {
+      x: Math.random() * width,
+      y: Math.random() * height, // To create random positions within the window
+      radius: 15 + Math.random() * 20, // Random size of the raindrop
+      opacity: 0.8, // Initial opacity
+      color: color, // Color based on current position
+    };
+
+    setRaindrops((prevRaindrops) => {
+      // Limit the number of raindrops to 3-5
+      const updatedRaindrops = [...prevRaindrops, newRaindrop].slice(-5);
+      return updatedRaindrops;
+    });
+  };
+
+  const getSongTitleFromPath = (audioPath) => {
+    const filename = audioPath.replace(/^audio\//, "").replace(/\.[^/.]+$/, "");
+    const lastUnderscore = filename.lastIndexOf("_");
+    const name =
+      lastUnderscore !== -1 ? filename.substring(0, lastUnderscore) : filename;
+
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
+
+  // Function to update raindrop size and opacity over time
+  useEffect(() => {
+    const fadeRaindrops = setInterval(() => {
+      setRaindrops(
+        (prevRaindrops) =>
+          prevRaindrops
+            .map((drop) => ({
+              ...drop,
+              radius: drop.radius + 0.3, // Raindrop expands
+              opacity: drop.opacity - 0.015, // Raindrop fades out
+            }))
+            .filter((drop) => drop.opacity > 0) // Keep only non-transparent drops
+            .slice(-5) // Limit to 5 drops at once
+      );
+    }, 50);
+
+    return () => clearInterval(fadeRaindrops);
+  }, []);
+
   return (
     <View
       style={{
@@ -167,67 +228,117 @@ const AudioVisualizer = ({
         </TouchableOpacity>
       </View>
 
-      <Svg width={SIZE} height={SIZE}>
-        <Circle
-          cx={CENTER}
-          cy={CENTER}
-          r={RADIUS - 12}
-          stroke="#ffffff33"
-          strokeWidth={4}
-          fill="transparent"
-        />
+      {/* Raindrop SVG - Background effect */}
+      <View style={{ flex: 1 }}>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 0,
+          }}
+        >
+          <Svg
+            width={width}
+            height={height}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 0,
+            }}
+          >
+            {raindrops.map((drop, idx) => (
+              <Circle
+                key={idx}
+                cx={drop.x}
+                cy={drop.y}
+                r={drop.radius}
+                fill={drop.color}
+                opacity={drop.opacity}
+              />
+            ))}
+          </Svg>
+        </View>
 
-        {/* Progress Ring */}
-        <Circle
-          cx={CENTER}
-          cy={CENTER}
-          r={RADIUS - 12}
-          stroke="white"
-          strokeWidth={5}
-          fill="transparent"
-          strokeDasharray={2 * Math.PI * (RADIUS - 11)}
-          strokeDashoffset={(1 - progress) * 2 * Math.PI * (RADIUS - 11)}
-          rotation={-90}
-          originX={CENTER}
-          originY={CENTER}
-          strokeLinecap="round"
-        />
+        <View
+          style={{
+            width: SIZE,
+            height: SIZE,
+            justifyContent: "center",
+            alignItems: "center",
+            alignSelf: "center",
+            marginTop: 15,
+            zIndex: 1,
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 22, marginBottom: 25 }}>
+            {getSongTitleFromPath(songName) || "Song Title"}
+          </Text>
 
-        {frame.map((value, i) => {
-          const angle = (2 * Math.PI * i) / NUM_BARS;
-          const barLength = value * BAR_HEIGHT * 9 + 4;
+          <Svg width={SIZE} height={SIZE}>
+            <Circle
+              cx={CENTER}
+              cy={CENTER}
+              r={RADIUS - 12}
+              stroke="#ffffff33"
+              strokeWidth={4}
+              fill="transparent"
+            />
 
-          const x1 = CENTER + RADIUS * Math.cos(angle);
-          const y1 = CENTER + RADIUS * Math.sin(angle);
-
-          const x2 = CENTER + (RADIUS + barLength) * Math.cos(angle);
-          const y2 = CENTER + (RADIUS + barLength) * Math.sin(angle);
-
-          const third = Math.floor(NUM_BARS / 3);
-
-          const color =
-            i < third
-              ? "#c8428b"
-              : i < third * 2
-              ? "#ffffff"
-              : i < third * 3
-              ? "#84d9f1"
-              : "#c8428b";
-
-          return (
-            <Line
-              key={i}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke={color}
-              strokeWidth={BAR_WIDTH}
+            {/* Progress Ring */}
+            <Circle
+              cx={CENTER}
+              cy={CENTER}
+              r={RADIUS - 12}
+              stroke="white"
+              strokeWidth={5}
+              fill="transparent"
+              strokeDasharray={2 * Math.PI * (RADIUS - 11)}
+              strokeDashoffset={(1 - progress) * 2 * Math.PI * (RADIUS - 11)}
+              rotation={-90}
+              originX={CENTER}
+              originY={CENTER}
               strokeLinecap="round"
             />
-          );
-        })}
-      </Svg>
+
+            {frame.map((value, i) => {
+              const angle = (2 * Math.PI * i) / NUM_BARS;
+              const barLength = value * BAR_HEIGHT * 9 + 4;
+
+              const x1 = CENTER + RADIUS * Math.cos(angle);
+              const y1 = CENTER + RADIUS * Math.sin(angle);
+
+              const x2 = CENTER + (RADIUS + barLength) * Math.cos(angle);
+              const y2 = CENTER + (RADIUS + barLength) * Math.sin(angle);
+
+              const third = Math.floor(NUM_BARS / 3);
+
+              const color =
+                i < third
+                  ? "#c8428b"
+                  : i < third * 2
+                  ? "#ffffff"
+                  : i < third * 3
+                  ? "#84d9f1"
+                  : "#c8428b";
+
+              return (
+                <Line
+                  key={i}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke={color}
+                  strokeWidth={BAR_WIDTH}
+                  strokeLinecap="round"
+                />
+              );
+            })}
+          </Svg>
+        </View>
+      </View>
 
       {/* Time & Controls */}
       <View style={styles.playerContainer}>
@@ -317,5 +428,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     padding: 25,
+    paddingTop: 22,
+    paddingBottom: 15,
   },
 });

@@ -10,6 +10,7 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [barValues, setBarValues] = useState(null);
   const [vibrationValues, setVibrationValues] = useState(null);
+  const [colorValues, setColorValues] = useState(null);
 
   useEffect(() => {
     const fetchAllVisualizerData = async () => {
@@ -17,6 +18,7 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
         const responses = await Promise.all([
           fetch(`${consts.api}/bars/${songApiPath}`),
           fetch(`${consts.api}/vibrations/${songApiPath}`),
+          fetch(`${consts.api}/colors/${songApiPath}`),
         ]);
 
         const dataArray = await Promise.all(responses.map((res) => res.json()));
@@ -25,6 +27,7 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
 
         setBarValues(combinedResults[0]);
         setVibrationValues(combinedResults[1]);
+        setColorValues(combinedResults[2]);
       } catch (error) {
         console.error("Error fetching visualizer data:", error);
       }
@@ -46,6 +49,9 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
             audioPath={songPhonePath}
             setSongReady={setSongReady}
             setSongStartTimestamp={setSongStartTimestamp}
+            colorValues={colorValues}
+            pattern={vibrationValues[0]}
+            songName={songApiPath}
           />
           <VibrationsHandler
             isPlaying={isPlaying}
