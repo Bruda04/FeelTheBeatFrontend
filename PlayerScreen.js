@@ -14,20 +14,9 @@ export default function App({ navigation, route }) {
   const colorScheme = useColorScheme();
 
   return (
-    <SafeAreaView
-      edges={["top", "left", "right", "bottom"]}
-      style={[styles.container]}
-    >
-      <ThemeProvider theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <NavigationContainer
-          theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <View style={styles.container}>
-            <MusicView songApiPath={songName} songPhonePath={songPhonePath} />
-          </View>
-        </NavigationContainer>
-      </ThemeProvider>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <MusicView songApiPath={songName} songPhonePath={songPhonePath} />
+    </View>
   );
 }
 

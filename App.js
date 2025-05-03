@@ -1,76 +1,47 @@
-import React, { useState } from "react";
+import React from "react";
+import { StyleSheet, useColorScheme, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  View,
-  StyleSheet,
-  Button,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import * as DocumentPicker from "expo-document-picker";
-import consts from "./utils/consts";
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const UploadScreen = ({ navigation }) => {
-  const [loading, setLoading] = useState(false);
+import PlayerScreen from "./PlayerScreen";
+import UploadScreen from "./UploadScreen";
+import MusicView from "./components/MusicView";
 
-  const handleAddSong = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "audio/mpeg",
-        copyToCacheDirectory: true,
-      });
+const Stack = createNativeStackNavigator();
 
-      if (result.canceled || !result.assets?.[0]) return;
-
-      const file = result.assets[0];
-      setLoading(true);
-
-      const formData = new FormData();
-      formData.append("audio", {
-        uri: file.uri,
-        name: file.name,
-        type: "audio/mpeg",
-      });
-
-      const response = await fetch(`${consts.api}/upload-song`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error("Upload failed");
-
-      const data = await response.json();
-      const songName = data.file_path || "Unnamed Song";
-
-      navigation.navigate("MusicView", {
-        songName,
-        songPhonePath: file.uri,
-      });
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Error", err.message || "Upload failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function App() {
+  const colorScheme = useColorScheme();
 
   return (
-    <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
-        <Button title="Add Song" onPress={handleAddSong} />
-      )}
-    </View>
+    <SafeAreaView
+      edges={["top", "left", "right", "bottom"]}
+      style={styles.container}
+    >
+      <NavigationContainer
+        theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      >
+        <Stack.Navigator
+          initialRouteName="UploadScreen"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="UploadScreen" component={UploadScreen} />
+          <Stack.Screen name="PlayerScreen" component={PlayerScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
-};
-
-export default UploadScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "pink",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

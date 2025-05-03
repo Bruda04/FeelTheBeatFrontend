@@ -47,10 +47,13 @@ const AudioVisualizer = ({
         staysActiveInBackground: false,
         playsInSilentModeIOS: true,
       });
-
-      const { sound } = await Audio.Sound.createAsync(audioPath, {
-        shouldPlay: true,
-      });
+      console.log("Loading Sound", audioPath);
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: audioPath },
+        {
+          shouldPlay: true,
+        }
+      );
 
       const status = await sound.getStatusAsync();
       if (status.isLoaded) {
