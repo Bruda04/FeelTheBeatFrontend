@@ -3,13 +3,12 @@ import AudioVisualizer from "./AudioVisualizer";
 import VibrationsHandler from "./VibrationsHandler";
 import consts from "../utils/consts";
 
-const MusicView = () => {
+const MusicView = ({ songApiPath, songPhonePath }) => {
   const [songReady, setSongReady] = useState(false);
   const [songStartTimestamp, setSongStartTimestamp] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [barValues, setBarValues] = useState(null);
   const [vibrationValues, setVibrationValues] = useState(null);
-  const songApiPath = "audio/acdcInstrumental_8GTr5aX.mp3"; // TODO: make this dynamic
 
   useEffect(() => {
     const fetchAllVisualizerData = async () => {
@@ -43,7 +42,7 @@ const MusicView = () => {
             isPlaying={isPlaying}
             setIsPlaying={setIsPlaying}
             barValues={barValues}
-            audioPath={require("../assets/acdcInstrumental.mp3")}
+            audioPath={songPhonePath}
             setSongReady={setSongReady}
             setSongStartTimestamp={setSongStartTimestamp}
           />
