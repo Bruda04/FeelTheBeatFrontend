@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 
 const { CustomVibration } = NativeModules;
 
-const INTENSITY_TO_DURATION_SCALE = 0.5;
+const INTENSITY_TO_DURATION_SCALE = 0.6;
 const MIN_DURATION = 0.1;
 const MAX_DURATION = 500;
 
@@ -35,7 +35,15 @@ const VibrationsHandler = ({
         return null;
       }
 
-      const duration = 200; // fixed for now; adjust if needed
+      let duration;
+      if (intensity >= 125) {
+        // Scale duration with intensity
+        duration = intensity * INTENSITY_TO_DURATION_SCALE;
+        duration = Math.min(MAX_DURATION, Math.max(MIN_DURATION, duration));
+      } else {
+        // Default short duration
+        duration = 100;
+      }
 
       return setTimeout(() => {
         CustomVibration.vibrateWithIntensity(duration, intensity);
