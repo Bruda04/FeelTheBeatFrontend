@@ -21,6 +21,7 @@ const UploadScreen = () => {
       const result = await DocumentPicker.getDocumentAsync({
         type: "audio/mpeg",
         copyToCacheDirectory: true,
+        multiple: false,
       });
 
       if (result.canceled || !result.assets?.[0]) return;
