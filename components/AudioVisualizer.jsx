@@ -279,8 +279,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingTop: 20,
-    paddingBottom: 33,
+    paddingTop: 25,
+    paddingBottom: 40,
+    backgroundColor: "#6c6c6c",
+    borderRadius: 15,
   },
   playerControls: {
     width: "84%",
