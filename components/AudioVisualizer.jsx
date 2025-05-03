@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingTop: 25,
-    paddingBottom: 40,
+    paddingBottom: 35,
     backgroundColor: "#6c6c6c",
     borderRadius: 15,
   },
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     gap: 40,
   },
   progressBar: {
-    marginTop: 20,
+    marginTop: 30,
     width: "85%",
     height: 6,
     backgroundColor: colors.secondary,
