@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "feel-the-beat",
+    "scheme": "feel-the-beat",
     "slug": "feel-the-beat",
     "version": "1.0.0",
     "orientation": "portrait",

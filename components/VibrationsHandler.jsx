@@ -7,7 +7,7 @@ const INTENSITY_TO_DURATION_SCALE = 0.5; // change this to control duration
 const MIN_DURATION = 0.1; // optional: minimum vibration time in ms
 const MAX_DURATION = 500; // optional: cap duration to prevent overlong vibration
 
-const VibrationsHandler = ({ pattern, amplitudes }) => {
+const VibrationsHandler = ({ pattern, amplitudes, isPlaying }) => {
   useEffect(() => {
     if (!pattern?.length || !amplitudes?.length) return;
 
