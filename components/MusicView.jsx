@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import AudioVisualizer from "./AudioVisualizer";
 import VibrationsHandler from "./VibrationsHandler";
-import consts from "../utils/consts";
+import colors from "../utils/colors";
+import { View, ActivityIndicator, Text } from "react-native";
 
 const MusicView = ({ songApiPath, songPhonePath }) => {
   const [songReady, setSongReady] = useState(false);
@@ -36,7 +37,7 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
 
   return (
     <>
-      {ready && (
+      {ready ? (
         <>
           <AudioVisualizer
             isPlaying={isPlaying}
@@ -54,6 +55,15 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
             songStartTimestamp={songStartTimestamp}
           />
         </>
+      ) : (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={{ color: colors.primary, fontSize: 20 }}>
+            Preparing your song...
+          </Text>
+          <ActivityIndicator size="150" color={colors.primary} />
+        </View>
       )}
     </>
   );

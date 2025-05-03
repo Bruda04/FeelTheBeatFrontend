@@ -6,9 +6,12 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  BackHandler,
 } from "react-native";
 import Svg, { Line, Circle } from "react-native-svg";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import colors from "../utils/colors";
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 const SIZE = width * 1;
@@ -34,6 +37,8 @@ const AudioVisualizer = ({
   setSongReady,
   setSongStartTimestamp,
 }) => {
+  const navigation = useNavigation();
+
   const [sound, setSound] = useState(null);
   const [frameIndex, setFrameIndex] = useState(0);
   const [position, setPosition] = useState(0);
@@ -106,6 +111,30 @@ const AudioVisualizer = ({
     }
   };
 
+  const stopSound = async () => {
+    if (sound) {
+      sound.stopAsync(); // Stop the sound when navigating back
+    }
+    setIsPlaying(false); // Reset the playing state
+    setSongReady(false); // Reset the song ready state
+    setSongStartTimestamp(null); // Reset the start timestamp
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      stopSound(); // Stop the sound
+      navigation.goBack(); // Navigate back
+      return true; // Prevent default behavior
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onBackPress
+    );
+
+    return () => backHandler.remove(); // Cleanup
+  }, [sound]);
+
   const toggleFavorite = () => setIsFavorite(!isFavorite);
 
   const frame = barValues[frameIndex];
@@ -113,16 +142,30 @@ const AudioVisualizer = ({
 
   return (
     <View
-      style={{ position: "relative", backgroundColor: "pink", height: "100%" }}
+      style={{
+        position: "relative",
+        backgroundColor: colors.background,
+        height: "100%",
+      }}
     >
       {/* Favorite button */}
-      <TouchableOpacity onPress={toggleFavorite} style={styles.favoriteIcon}>
-        <FontAwesome
-          name={isFavorite ? "heart" : "heart-o"}
-          size={26}
-          color={isFavorite ? "#e43359" : "white"}
-        />
-      </TouchableOpacity>
+      <View style={styles.topIcons}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+            stopSound();
+          }}
+        >
+          <Ionicons name="arrow-back" size={26} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleFavorite} style={styles.favoriteIcon}>
+          <FontAwesome
+            name={isFavorite ? "heart" : "heart-o"}
+            size={26}
+            color={isFavorite ? "#e43359" : "white"}
+          />
+        </TouchableOpacity>
+      </View>
 
       <Svg width={SIZE} height={SIZE}>
         <Circle
@@ -258,7 +301,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "85%",
     height: 6,
-    backgroundColor: "#ffffff33",
+    backgroundColor: colors.secondary,
     borderRadius: 3,
     overflow: "hidden",
   },
@@ -266,10 +309,11 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "white",
   },
-  favoriteIcon: {
+  topIcons: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     width: "100%",
-    alignItems: "flex-end",
-    padding: "20",
-    paddingRight: "25",
+    padding: 20,
   },
 });

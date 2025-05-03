@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import {
   View,
   StyleSheet,
-  Button,
   ActivityIndicator,
-  Alert,
+  TouchableOpacity,
+  Text,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import consts from "./utils/consts";
 import { useNavigation } from "@react-navigation/native"; // Assuming you're using React Navigation
+import colors from "./utils/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const UploadScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -51,20 +53,53 @@ const UploadScreen = () => {
       });
     } catch (err) {
       console.error(err);
-      Alert.alert("Error", err.message || "Upload failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <Text
+        style={{
+          fontSize: 40,
+          fontWeight: "bold",
+          marginBottom: 100,
+          color: colors.primary,
+          alignSelf: "center",
+          flex: 0.2,
+        }}
+      >
+        Feel the Beat
+      </Text>
+
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="150" color={colors.primary} />
       ) : (
-        <Button title="Add Song" onPress={handleAddSong} />
+        <>
+          <Text
+            style={{
+              fontSize: 15,
+              textAlign: "center",
+              marginBottom: 40,
+              color: colors.text,
+            }}
+          >
+            Upload your song to expirience music like you never could before!
+          </Text>
+          <TouchableOpacity
+            onPress={handleAddSong}
+            style={{
+              padding: 20,
+              borderRadius: 10,
+              backgroundColor: colors.primary,
+            }}
+          >
+            <Text style={{ color: colors.text, fontSize: 20 }}>Add Song</Text>
+          </TouchableOpacity>
+        </>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -73,7 +108,8 @@ export default UploadScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "pink",
+    backgroundColor: colors.background,
+    padding: 15,
     justifyContent: "center",
     alignItems: "center",
   },
