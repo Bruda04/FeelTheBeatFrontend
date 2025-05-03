@@ -4,6 +4,8 @@ import VibrationsHandler from "./VibrationsHandler";
 import consts from "../utils/consts";
 
 const MusicView = () => {
+  const [songReady, setSongReady] = useState(false);
+  const [songStartTimestamp, setSongStartTimestamp] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [barValues, setBarValues] = useState(null);
   const [vibrationValues, setVibrationValues] = useState(null);
@@ -42,11 +44,15 @@ const MusicView = () => {
             setIsPlaying={setIsPlaying}
             barValues={barValues}
             audioPath={require("../assets/acdcInstrumental.mp3")}
+            setSongReady={setSongReady}
+            setSongStartTimestamp={setSongStartTimestamp}
           />
           <VibrationsHandler
             isPlaying={isPlaying}
             pattern={vibrationValues[0]}
             amplitudes={vibrationValues[1]}
+            songReady={songReady}
+            songStartTimestamp={songStartTimestamp}
           />
         </>
       )}

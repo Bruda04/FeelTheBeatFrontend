@@ -26,7 +26,14 @@ const formatTime = (seconds) => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-const AudioVisualizer = ({ audioPath, barValues, isPlaying, setIsPlaying }) => {
+const AudioVisualizer = ({
+  audioPath,
+  barValues,
+  isPlaying,
+  setIsPlaying,
+  setSongReady,
+  setSongStartTimestamp,
+}) => {
   const [sound, setSound] = useState(null);
   const [frameIndex, setFrameIndex] = useState(0);
   const [position, setPosition] = useState(0);
@@ -42,13 +49,15 @@ const AudioVisualizer = ({ audioPath, barValues, isPlaying, setIsPlaying }) => {
       });
 
       const { sound } = await Audio.Sound.createAsync(audioPath, {
-        shouldPlay: isPlaying,
+        shouldPlay: true,
       });
 
       const status = await sound.getStatusAsync();
       if (status.isLoaded) {
+        setSongReady(true);
         setDuration(status.durationMillis / 1000);
         setIsPlaying(status.isPlaying ?? false);
+        setSongStartTimestamp(new Date().getTime());
       }
 
       setSound(sound);
@@ -89,6 +98,7 @@ const AudioVisualizer = ({ audioPath, barValues, isPlaying, setIsPlaying }) => {
       } else {
         await sound.playAsync();
         setIsPlaying(true);
+        setSongStartTimestamp(new Date().getTime()); // Update timestamp when playing
       }
     }
   };
