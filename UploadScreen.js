@@ -11,6 +11,7 @@ import consts from "./utils/consts";
 import { useNavigation } from "@react-navigation/native"; // Assuming you're using React Navigation
 import colors from "./utils/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FontAwesome } from "@expo/vector-icons"; // Assuming you're using FontAwesome for icons
 
 const UploadScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -63,40 +64,56 @@ const UploadScreen = () => {
     <SafeAreaView style={styles.container}>
       <Text
         style={{
-          fontSize: 40,
+          fontSize: 39,
           fontWeight: "bold",
-          marginBottom: 100,
+          margin: 0,
           color: colors.primary,
           alignSelf: "center",
-          flex: 0.2,
+          marginBottom: 35,
         }}
       >
         Feel the Beat
+        <View style={{ paddingLeft: 15 }}>
+          <FontAwesome
+            name="music"
+            size={40}
+            color={colors.primary}
+            style={{ marginBottom: -6 }}
+          />
+        </View>
       </Text>
 
       {loading ? (
-        <ActivityIndicator size="150" color={colors.primary} />
+        <ActivityIndicator
+          size="120"
+          color={colors.primary}
+          style={{ marginTop: "20" }}
+        />
       ) : (
         <>
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 16,
               textAlign: "center",
-              marginBottom: 40,
+              marginBottom: 70,
+              height: 100,
+              lineHeight: 22,
               color: colors.text,
             }}
           >
-            Upload your song to expirience music like you never could before!
+            Upload your song to experience music like never before!
           </Text>
           <TouchableOpacity
             onPress={handleAddSong}
             style={{
-              padding: 20,
+              padding: 18,
+              paddingTop: 12,
+              paddingBottom: 12,
               borderRadius: 10,
-              backgroundColor: colors.primary,
+              backgroundColor: "#d0543d",
             }}
           >
-            <Text style={{ color: colors.text, fontSize: 20 }}>Add Song</Text>
+            <Text style={{ color: colors.text, fontSize: 18 }}>Add Song</Text>
           </TouchableOpacity>
         </>
       )}
@@ -111,6 +128,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     padding: 15,
+    paddingRight: 30,
+    paddingLeft: 30,
     justifyContent: "center",
     alignItems: "center",
   },

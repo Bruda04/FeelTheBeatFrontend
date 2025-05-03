@@ -156,7 +156,7 @@ const AudioVisualizer = ({
             stopSound();
           }}
         >
-          <Ionicons name="arrow-back" size={26} color="white" />
+          <Ionicons name="arrow-back" size={30} color="white" />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleFavorite} style={styles.favoriteIcon}>
           <FontAwesome
@@ -314,6 +314,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    padding: 20,
+    padding: 25,
   },
 });

@@ -59,10 +59,12 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ color: colors.primary, fontSize: 20 }}>
+          <Text
+            style={{ color: colors.primary, fontSize: 20, marginBottom: 35 }}
+          >
             Preparing your song...
           </Text>
-          <ActivityIndicator size="150" color={colors.primary} />
+          <ActivityIndicator size="110" color={colors.primary} />
         </View>
       )}
     </>
