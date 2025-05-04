@@ -38,6 +38,7 @@ const AudioVisualizer = ({
   setSongStartTimestamp,
   colorValues,
   pattern,
+  amplitudes,
   songName,
 }) => {
   const navigation = useNavigation();
@@ -97,17 +98,25 @@ const AudioVisualizer = ({
         setPosition(positionSec);
         const frameIndex = Math.floor(positionSec / 0.05); // 20 FPS
         setFrameIndex(frameIndex % barValues.length);
-
-        const currentTime = new Date().getTime();
-        if (currentTime - lastRaindropTime >= 1000) {
-          setLastRaindropTime(currentTime);
-          spawnRaindrop();
-        }
       }
     }, 25);
 
     return () => clearInterval(interval);
   }, [sound, lastRaindropTime]);
+
+  const THRESHOLD = 0.1; // seconds
+
+  useEffect(() => {
+    const match = pattern.find(
+      (beat) =>
+        Math.abs(beat - position) < THRESHOLD && lastRaindropTime !== beat
+    );
+
+    if (match !== undefined) {
+      setLastRaindropTime(match);
+      spawnRaindrop();
+    }
+  }, [position]);
 
   const handlePlayPause = async () => {
     if (!sound) return;
@@ -152,6 +161,7 @@ const AudioVisualizer = ({
 
   const frame = barValues[frameIndex];
   const progress = position / duration;
+  const amplitude = amplitudes[frameIndex] || 0;
 
   // Function to spawn a raindrop with color and animation
   const spawnRaindrop = () => {
@@ -161,14 +171,14 @@ const AudioVisualizer = ({
     const newRaindrop = {
       x: Math.random() * width,
       y: Math.random() * height - 80, // To create random positions within the window
-      radius: 10 + Math.random() * 45, // Random size of the raindrop
+      radius: 10 + Math.random() * 55, // Random size of the raindrop
       opacity: 0.6, // Initial opacity
       color: color, // Color based on current position
     };
 
     setRaindrops((prevRaindrops) => {
-      // Limit the number of raindrops to 3-5
-      const updatedRaindrops = [...prevRaindrops, newRaindrop].slice(-10);
+      // Limit the number of raindrops to 10
+      const updatedRaindrops = [...prevRaindrops, newRaindrop].slice(-15);
       return updatedRaindrops;
     });
   };
@@ -192,7 +202,7 @@ const AudioVisualizer = ({
           prevRaindrops
             .map((drop) => ({
               ...drop,
-              radius: drop.radius + 0.5, // Raindrop expands
+              radius: drop.radius + amplitude * 0.03, // Raindrop expands
               opacity: drop.opacity - 0.015, // Raindrop fades out
             }))
             .filter((drop) => drop.opacity > 0) // Keep only non-transparent drops
@@ -276,18 +286,24 @@ const AudioVisualizer = ({
         >
           <Text
             style={{
+              position: "absolute",
+              top: 0,
               color: "white",
-              fontSize: 22,
-              marginTop: 25,
-              margin: 10,
+              fontSize: 18,
+              paddingLeft: 20,
+              paddingRight: 20,
               textAlign: "center",
-              lineHeight: 30,
+              lineHeight: 22,
             }}
           >
             {getSongTitleFromPath(songName) || "Song Title"}
           </Text>
 
-          <Svg width={SIZE} height={SIZE}>
+          <Svg
+            width={SIZE}
+            height={SIZE}
+            style={{ position: "absolute", top: 75, left: 0 }}
+          >
             <Circle
               cx={CENTER}
               cy={CENTER}
@@ -315,7 +331,7 @@ const AudioVisualizer = ({
 
             {frame.map((value, i) => {
               const angle = (2 * Math.PI * i) / NUM_BARS;
-              const barLength = value * BAR_HEIGHT * 9 + 4;
+              const barLength = value * BAR_HEIGHT * 10 + 4;
 
               const x1 = CENTER + RADIUS * Math.cos(angle);
               const y1 = CENTER + RADIUS * Math.sin(angle);

@@ -50,6 +50,7 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
             setSongStartTimestamp={setSongStartTimestamp}
             colorValues={colorValues}
             pattern={vibrationValues[0]}
+            amplitudes={vibrationValues[1]}
             songName={songApiPath}
           />
           <VibrationsHandler
