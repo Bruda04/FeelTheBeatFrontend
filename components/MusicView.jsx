@@ -16,14 +16,13 @@ const MusicView = ({ songApiPath, songPhonePath }) => {
     const fetchAllVisualizerData = async () => {
       try {
         const responses = await Promise.all([
-          fetch(`${consts.api}/bars/${songApiPath}`),
-          fetch(`${consts.api}/vibrations/${songApiPath}`),
-          fetch(`${consts.api}/colors/${songApiPath}`),
+          fetch(`${consts.api}/bars/${encodeURI(songApiPath)}`),
+          fetch(`${consts.api}/vibrations/${encodeURI(songApiPath)}`),
+          fetch(`${consts.api}/colors/${encodeURI(songApiPath)}`),
         ]);
 
         const dataArray = await Promise.all(responses.map((res) => res.json()));
         const combinedResults = dataArray.map((data) => data.result);
-        console.log(combinedResults);
 
         setBarValues(combinedResults[0]);
         setVibrationValues(combinedResults[1]);

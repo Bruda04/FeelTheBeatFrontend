@@ -119,7 +119,7 @@ const AudioVisualizer = ({
       } else {
         await sound.playAsync();
         setIsPlaying(true);
-        setSongStartTimestamp(new Date().getTime()); // Update timestamp when playing
+        // setSongStartTimestamp(new Date().now()); // Update timestamp when playing
       }
     }
   };
@@ -174,7 +174,9 @@ const AudioVisualizer = ({
   };
 
   const getSongTitleFromPath = (audioPath) => {
-    const filename = audioPath.replace(/^audio\//, "").replace(/\.[^/.]+$/, "");
+    const filename = decodeURI(audioPath)
+      .replace(/^audio\//, "")
+      .replace(/\.[^/.]+$/, "");
     const lastUnderscore = filename.lastIndexOf("_");
     const name =
       lastUnderscore !== -1 ? filename.substring(0, lastUnderscore) : filename;
@@ -272,7 +274,16 @@ const AudioVisualizer = ({
             zIndex: 1,
           }}
         >
-          <Text style={{ color: "white", fontSize: 22, marginTop: 0 }}>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 22,
+              marginTop: 25,
+              margin: 10,
+              textAlign: "center",
+              lineHeight: 30,
+            }}
+          >
             {getSongTitleFromPath(songName) || "Song Title"}
           </Text>
 

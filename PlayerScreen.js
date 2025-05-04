@@ -6,7 +6,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App({ navigation, route }) {
   const { songName, songPhonePath } = route.params || {}; // Get the song name from route params
-  const colorScheme = useColorScheme();
 
   return (
     <SafeAreaView
