@@ -17,10 +17,10 @@ const { width, height } = Dimensions.get("window");
 const SIZE = width * 1;
 
 const CENTER = SIZE / 2;
-const RADIUS = SIZE / 4;
+const RADIUS = SIZE / 3.6;
 
 const NUM_BARS = 45;
-const BAR_WIDTH = 6;
+const BAR_WIDTH = 7;
 const BAR_HEIGHT = 5;
 
 const formatTime = (seconds) => {
@@ -160,15 +160,15 @@ const AudioVisualizer = ({
 
     const newRaindrop = {
       x: Math.random() * width,
-      y: Math.random() * height, // To create random positions within the window
-      radius: 15 + Math.random() * 20, // Random size of the raindrop
-      opacity: 0.8, // Initial opacity
+      y: Math.random() * height - 80, // To create random positions within the window
+      radius: 10 + Math.random() * 45, // Random size of the raindrop
+      opacity: 0.6, // Initial opacity
       color: color, // Color based on current position
     };
 
     setRaindrops((prevRaindrops) => {
       // Limit the number of raindrops to 3-5
-      const updatedRaindrops = [...prevRaindrops, newRaindrop].slice(-5);
+      const updatedRaindrops = [...prevRaindrops, newRaindrop].slice(-10);
       return updatedRaindrops;
     });
   };
@@ -190,7 +190,7 @@ const AudioVisualizer = ({
           prevRaindrops
             .map((drop) => ({
               ...drop,
-              radius: drop.radius + 0.3, // Raindrop expands
+              radius: drop.radius + 0.5, // Raindrop expands
               opacity: drop.opacity - 0.015, // Raindrop fades out
             }))
             .filter((drop) => drop.opacity > 0) // Keep only non-transparent drops
@@ -268,11 +268,11 @@ const AudioVisualizer = ({
             justifyContent: "center",
             alignItems: "center",
             alignSelf: "center",
-            marginTop: 15,
+            marginTop: 30,
             zIndex: 1,
           }}
         >
-          <Text style={{ color: "white", fontSize: 22, marginBottom: 25 }}>
+          <Text style={{ color: "white", fontSize: 22, marginTop: 0 }}>
             {getSongTitleFromPath(songName) || "Song Title"}
           </Text>
 
@@ -347,13 +347,13 @@ const AudioVisualizer = ({
 
           <View style={styles.controlButtons}>
             <TouchableOpacity>
-              <Ionicons name="play-skip-back" size={27} color="white" />
+              <Ionicons name="play-skip-back" size={29} color="white" />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handlePlayPause}>
               <FontAwesome
                 name={isPlaying ? "pause" : "play"}
-                size={27}
+                size={29}
                 color="white"
                 style={{
                   marginLeft: !isPlaying ? "1.7" : "0",
@@ -363,7 +363,7 @@ const AudioVisualizer = ({
             </TouchableOpacity>
 
             <TouchableOpacity>
-              <Ionicons name="play-skip-forward" size={27} color="white" />
+              <Ionicons name="play-skip-forward" size={29} color="white" />
             </TouchableOpacity>
           </View>
 
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   },
   time: {
     color: "white",
-    fontSize: 13.5,
+    fontSize: 14,
   },
   controlButtons: {
     flexDirection: "row",
@@ -411,9 +411,9 @@ const styles = StyleSheet.create({
     gap: 40,
   },
   progressBar: {
-    marginTop: 30,
+    marginTop: 40,
     width: "85%",
-    height: 6,
+    height: 7,
     backgroundColor: colors.secondary,
     borderRadius: 3,
     overflow: "hidden",
@@ -423,6 +423,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   topIcons: {
+    borderBottomColor: colors.secondary,
+    borderBottomWidth: 1,
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
